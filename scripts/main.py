@@ -54,6 +54,6 @@ if config.state == True:
 #    @bot.message_handler(func=lambda message: True)
 #    def echo_all(message):
 #	    bot.reply_to(message, message.text)
-    
+    time_now =  dt.strftime("%D | %H:%M")
     bot.polling()
     time.sleep(0.1)
