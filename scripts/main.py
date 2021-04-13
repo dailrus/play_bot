@@ -15,7 +15,7 @@ import threading
 import asyncio
 import logging
 
-logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=debug)
+logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level='DEBUG')
 #logging.warning('This will get logged to a file')
 
 
