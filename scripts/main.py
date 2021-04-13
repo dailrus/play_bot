@@ -4,7 +4,8 @@ from telebot.types import Message
 from winrt.windows.media.control import \
 GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
-
+import os
+import sys
 import telebot
 import config
 import time
@@ -41,13 +42,15 @@ def send_status(message):
 def time_now():
     dt = datetime.now()
     return(dt.strftime("%D | %H:%M"))
+def send_error(message):
+    bot.send_message(message.chat.id, 'Перезапустите бота для корректной работы!')
 ##################################################################################################
 
 
 
 try:
-   bot.send_message(675474591, 'Бот запущен!\nВремя: {0}'.format(time_now()))
-   print('Сообщение админу отправлено =)')
+   bot.send_message(675474591, 'Бот запущен!\n[{0}]'.format(time_now()))
+   print('Успешный старт!')
 except:
     print('Бот не смог отправить приветствие')
 
@@ -67,21 +70,47 @@ if config.state == True:
         elif get_status() == 5:
             bot.send_message(message.chat.id, 'Музыка остановлена!')
         elif get_status() == 0:
-            bot.send_message(message.chat.id, 'Перезапустите бота для корректной работы!')
+            send_error(message)
         print('[{0}] {1} нажимает воспроизведение'.format(time_now(), message.chat.username))
     @bot.message_handler(commands=['next'])
     def next_track(message):
         win32api.keybd_event(next_button, 0, ext_key, 0)
         print('[{0}] {1} ставит следующий трек'.format(time_now(), message.chat.username))
+    @bot.message_handler(commands=['volup'])
+    def volume_up(message):
+        try:
+            count = int(message.text.split(' ')[1])
+        except:
+            count = 2
+        for i in range (1, int(count/2)+1):
+            win32api.keybd_event(vol_up, 0, ext_key, 0)
+            time.sleep(0.5)
+        print('[{0}] {1} прибавил громкость'.format(time_now(), message.chat.username))
+    @bot.message_handler(commands=['voldown'])
+    def volume_down(message):
+        try:
+            count = int(message.text.split(' ')[1])
+        except:
+            count = 2
+        for i in range (1, int(count/2)+1):
+            win32api.keybd_event(vol_down, 0, ext_key, 0)
+            time.sleep(0.5)
+        print('[{0}] {1} убавил громкость'.format(time_now(), message.chat.username))
     @bot.message_handler(commands=['prev'])
     def prev_track(message):
         win32api.keybd_event(prev_button, 0, ext_key, 0)
         print('[{0}] {1} возвращает предыдущий трек'.format(time_now(), message.chat.username))
     @bot.message_handler(commands=['info'])
-    def prev_track(message):
+    def info_get(message):
         print('[{0}] {1} запросил информацию'.format(time_now(), message.chat.username))
         send_status(message)
     @bot.message_handler(content_types=['text'])
+    @bot.message_handler(commands=['restart'])
+    def restart(message):
+        sys.exit()
+        os.startfile('scripts\main.py')
+    
+    
     def echo_messages(message: Message):
         text = message.text
         if message.text == 'Привет':
@@ -93,4 +122,4 @@ if config.state == True:
 
         else:
             bot.send_message(message.chat.id, 'Может лучше ввёдешь /start?')    
-    bot.polling(interval=0.5)
+    bot.polling()
