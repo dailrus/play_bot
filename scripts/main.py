@@ -66,7 +66,7 @@ if config.state == True:
         elif get_status() == 5:
             bot.send_message(message.chat.id, 'Музыка остановлена!')
         elif get_status() == 0:
-            bot.send_message(message.chat.id, 'Нете запущенных плеров!')
+            bot.send_message(message.chat.id, 'Перезапустите бота для корректной работы!')
         print('[{0}] {1} нажимает воспроизведение'.format(time_now(), message.chat.username))
     @bot.message_handler(commands=['next'])
     def next_track(message):
