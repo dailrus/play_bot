@@ -1,6 +1,7 @@
 from datetime import datetime
 from win32con import VK_MEDIA_PLAY_PAUSE as play_button, VK_MEDIA_NEXT_TRACK as next_button, VK_MEDIA_PREV_TRACK as prev_button, VK_VOLUME_UP as vol_up, VK_VOLUME_DOWN as vol_down, KEYEVENTF_EXTENDEDKEY as ext_key
 from telebot.types import Message
+from logging import debug, info
 from winrt.windows.media.control import \
 GlobalSystemMediaTransportControlsSessionManager as MediaManager
 
@@ -12,6 +13,11 @@ import time
 import win32api
 import threading
 import asyncio
+import logging
+
+logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=debug)
+#logging.warning('This will get logged to a file')
+
 
 bot = telebot.TeleBot(config.token, parse_mode=None)
 status = {0:'Нет открытых плееров',1:'Открыт плеер(ы)',2:'Переключение трека',3:'Остановлено',4:'Воспроизводится',5:'Приостановлено'}
@@ -50,7 +56,7 @@ def send_error(message):
 
 try:
    bot.send_message(675474591, 'Бот запущен!\n[{0}]'.format(time_now()))
-   print('Успешный старт!')
+   info('[{}] Бот запущен'.format(time_now()))
 except:
     print('Бот не смог отправить приветствие')
 
@@ -58,7 +64,7 @@ if config.state == True:
     @bot.message_handler(commands=['start'])
     def send_welcome(message):
         bot.reply_to(message, "{}, выбери действие)".format(message.chat.username))
-        print('[{}]'.format(time_now()),message.chat.username,'здоровается с ботом!')
+        info('[{}]'.format(time_now()),message.chat.username,'здоровается с ботом!')
     
     
     @bot.message_handler(commands=['play'])
@@ -71,21 +77,23 @@ if config.state == True:
             bot.send_message(message.chat.id, 'Музыка остановлена!')
         elif get_status() == 0:
             send_error(message)
-        print('[{0}] {1} нажимает воспроизведение'.format(time_now(), message.chat.username))
+        info('[{0}] {1} нажимает воспроизведение'.format(time_now(), message.chat.username))
     @bot.message_handler(commands=['next'])
     def next_track(message):
         win32api.keybd_event(next_button, 0, ext_key, 0)
-        print('[{0}] {1} ставит следующий трек'.format(time_now(), message.chat.username))
+        info('[{0}] {1} ставит следующий трек'.format(time_now(), message.chat.username))
     @bot.message_handler(commands=['volup'])
     def volume_up(message):
         try:
             count = int(message.text.split(' ')[1])
         except:
             count = 2
+        
         for i in range (1, int(count/2)+1):
             win32api.keybd_event(vol_up, 0, ext_key, 0)
-            time.sleep(0.5)
-        print('[{0}] {1} прибавил громкость'.format(time_now(), message.chat.username))
+            time.sleep(0.1)
+        bot.send_message(message.chat.id, 'Громкость прибавлена!')
+        info('[{0}] {1} прибавил громкость'.format(time_now(), message.chat.username))
     @bot.message_handler(commands=['voldown'])
     def volume_down(message):
         try:
@@ -94,15 +102,17 @@ if config.state == True:
             count = 2
         for i in range (1, int(count/2)+1):
             win32api.keybd_event(vol_down, 0, ext_key, 0)
-            time.sleep(0.5)
-        print('[{0}] {1} убавил громкость'.format(time_now(), message.chat.username))
+            time.sleep(0.1)
+        bot.send_message(message.chat.id, 'Громкость убавлена!')
+        info('[{0}] {1} убавил громкость'.format(time_now(), message.chat.username))
     @bot.message_handler(commands=['prev'])
     def prev_track(message):
         win32api.keybd_event(prev_button, 0, ext_key, 0)
-        print('[{0}] {1} возвращает предыдущий трек'.format(time_now(), message.chat.username))
+        info('[{0}] {1} возвращает предыдущий трек'.format(time_now(), message.chat.username))
     @bot.message_handler(commands=['info'])
+    
     def info_get(message):
-        print('[{0}] {1} запросил информацию'.format(time_now(), message.chat.username))
+        info('[{0}] {1} запросил информацию'.format(time_now(), message.chat.username))
         send_status(message)
     @bot.message_handler(content_types=['text'])
     @bot.message_handler(commands=['restart'])
@@ -116,9 +126,9 @@ if config.state == True:
         if message.text == 'Привет':
             bot.reply_to(message, "Кто ты?)")
 
-        if text == 'Полина':
+        if text == config.easter_trigger:
             config.easter_egg(bot, message)
-            print('[{0}] {1} находит пасхалку!'.format(time_now(), message.chat.username))
+            info('[{0}] {1} нашёл пасхалку!'.format(time_now(), message.chat.username))
 
         else:
             bot.send_message(message.chat.id, 'Может лучше ввёдешь /start?')    
