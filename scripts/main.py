@@ -26,12 +26,10 @@ def get_status():
             if current_session:
                 info = current_session.get_playback_info()
                 return info
-            failed = False
             raise Exception('Невозможно получить сессию')
         except:
             failed = True
-        asyncio.sleep(4)
-    
+        failed = False
     current_media_info = asyncio.run(get_media_info())    
     if failed == False:    
         return(current_media_info.playback_status)
@@ -62,6 +60,7 @@ if config.state == True:
     @bot.message_handler(commands=['play'])
     def play_pause(message):
         win32api.keybd_event(play_button, 0, ext_key, 0)
+        time.sleep(0.5)
         if get_status() == 4:
             bot.send_message(message.chat.id, 'Музыка запущена!')
         elif get_status() == 5:
