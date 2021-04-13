@@ -26,10 +26,11 @@ def get_status():
             if current_session:
                 info = current_session.get_playback_info()
                 return info
+            failed = False
             raise Exception('Невозможно получить сессию')
         except:
             failed = True
-        failed = False
+            
     current_media_info = asyncio.run(get_media_info())    
     if failed == False:    
         return(current_media_info.playback_status)
