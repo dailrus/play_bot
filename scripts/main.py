@@ -85,6 +85,7 @@ if config.state == True:
     @bot.message_handler(commands=['next'])
     def next_track(message):
         win32api.keybd_event(next_button, 0, ext_key, 0)
+        bot.send_message(message.chat.id, 'Трек переключен вперёд!')
         print('[{0}] {1} ставит следующий трек'.format(time_now(), message.chat.username))
     @bot.message_handler(commands=['volup'])
     def volume_up(message):
@@ -113,6 +114,12 @@ if config.state == True:
     @bot.message_handler(commands=['prev'])
     def prev_track(message):
         win32api.keybd_event(prev_button, 0, ext_key, 0)
+        prev = get_info().get('title')
+        time.sleep(0.5)
+        if get_info().get('title') == prev:
+            bot.send_message(message.chat.id, 'Трек перемонтан в начало!')
+        else:
+            bot.send_message(message.chat.id, 'Трек переключен назад!')
         print('[{0}] {1} возвращает предыдущий трек'.format(time_now(), message.chat.username))
     
     @bot.message_handler(commands=['info'])
