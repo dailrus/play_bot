@@ -78,7 +78,7 @@ btn_up = types.KeyboardButton('🔊')
 btn_down = types.KeyboardButton('🔉')
 markup.row(btn_play, btn_pause)
 markup.row(btn_prev, btn_down, btn_up, btn_next)
-
+markup.resize_keyboard = True
 
 
 

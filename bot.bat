@@ -1,0 +1,1 @@
+"python.exe" "D:\Projects\IT\play_bot\scripts\main.py"
